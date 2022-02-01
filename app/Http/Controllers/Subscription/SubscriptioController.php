@@ -20,12 +20,14 @@ class SubscriptioController extends Controller
 
         return view('subscriptions.index', [
             'intent' => auth()->user()->createSetupIntent(),
+            'plan' => session('plan')
         ]);
     }
 
     public function store(Request $request)
     {
-        $request->user()->newSubscription('default', 'price_1KJGPjDK26XkRLHdK3W9n9oV')
+        $plan = session('plan');
+        $request->user()->newSubscription('default', $plan->stripe_id)
             ->create($request->token);
 
         return redirect()->route('subscriptions.premium');
@@ -44,30 +46,26 @@ class SubscriptioController extends Controller
         return view('subscriptions.account', compact('invoices'));
     }
 
-    public function downloadInvoice($invoiceId){
-       return Auth::user()
-       ->downloadInvoice($invoiceId,[
-        'vendor' => config('app.name'),
-        'product' => 'Assinatura VIP'
-    ]);
-       
+    public function downloadInvoice($invoiceId)
+    {
+        return Auth::user()
+            ->downloadInvoice($invoiceId, [
+                'vendor' => config('app.name'),
+                'product' => 'Assinatura VIP'
+            ]);
     }
 
     public function cancel()
     {
-         auth()->user()->subscription('default')->cancel();
+        auth()->user()->subscription('default')->cancel();
 
         return redirect()->route('subscriptions.account');
     }
 
     public function resume()
     {
-         auth()->user()->subscription('default')->resume();
+        auth()->user()->subscription('default')->resume();
 
         return redirect()->route('subscriptions.account');
     }
-    
-    
 }
-
-

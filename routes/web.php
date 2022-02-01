@@ -19,11 +19,12 @@ Route::get('/subscriptions/resume', [SubscriptioController::class, 'resume'])->n
 Route::get('/subscriptions/cancel', [SubscriptioController::class, 'cancel'])->name('subscriptions.cancel');
 Route::get('/subscriptions/invoice/{invoice}', [SubscriptioController::class, 'downloadInvoice'])->name('subscriptions.invoice.download');
 Route::get('/subscriptions/account', [SubscriptioController::class, 'account'])->name('subscriptions.account');
-Route::post('/subscriptions/store', [SubscriptioController::class, 'store'])->name('subscriptions.store');
-Route::get('/subscriptions/checkout', [SubscriptioController::class, 'index'])->name('subscriptions.checkout');
+Route::post('/subscriptions/store', [SubscriptioController::class, 'store'])->name('subscriptions.store')->middleware('check.choice.plan');
+Route::get('/subscriptions/checkout', [SubscriptioController::class, 'index'])->name('subscriptions.checkout')->middleware('check.choice.plan');
 Route::get('/subscriptions/premium', [SubscriptioController::class, 'premium'])->name('subscriptions.premium')->middleware(['subscribed']);;
 
-Route::get('/',[SiteController::class,  'index'])->name('site.home');
+Route::get('assinar/{url}', [SiteController::class, 'createSession'])->name('choice.plan');
+Route::get('/', [SiteController::class,  'index'])->name('site.home');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
